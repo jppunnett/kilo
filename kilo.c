@@ -5,10 +5,13 @@
 #include <termios.h>
 #include <unistd.h>
 
+/* DEFINES */
 #define CTRL_KEY(k) ((k) & 0x1f)
 
+/* DATA */
 struct termios orig_termios;
 
+/* TERMINAL */
 void die(const char *s)
 {
 	perror(s);
@@ -47,6 +50,13 @@ char editorReadKey()
 	return c;
 }
 
+/* OUTPUT */
+void editorRefreshScreen()
+{
+	write(STDOUT_FILENO, "\x1b[2J", 4);
+}
+
+/* INPUT */
 void editorProcessKeypress()
 {
 	char c = editorReadKey();
@@ -57,11 +67,13 @@ void editorProcessKeypress()
 	}
 }
 
+/* INIT */
 int main()
 {
 	enableRawMode();
 
 	while (1) {
+		editorRefreshScreen();
 		editorProcessKeypress();
 	}
 
