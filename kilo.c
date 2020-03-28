@@ -2,8 +2,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
+#include <assert.h>
 
 /* DEFINES */
 #define CTRL_KEY(k) ((k) & 0x1f)
@@ -56,6 +58,23 @@ char editorReadKey()
 	}
 	return c;
 }
+
+int getWindowSize(int *rows, int *cols)
+{
+	assert(rows != NULL);
+	assert(cols != NULL);
+
+	struct winsize ws;
+
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+		return -1;
+	} else {
+		*rows = ws.ws_row;
+		*cols = ws.ws_col;
+		return 0;
+	}
+}
+
 
 /* OUTPUT */
 
